@@ -59,12 +59,42 @@ async function run() {
 
     // [[[[[[[[[[[[[[[[[[[[[ Post New User Data ]]]]]]]]]]]]]]]]]]]]]
     app.post("/userData", async (req,res) => {
-        const body = req.body;
-        const result = await usersCollection.insertOne(body);
+        const user = req.body;
+        const query = { email: user.email };
+        const existingUser = await usersCollection.findOne(query);
+        if (existingUser) {
+            return res.send((message = "user already exists"));
+        }
+        const result = await usersCollection.insertOne(user);
         res.send(result);
+    })
+    
+    app.get("/userData", async(req,res) => {
+        const result = await usersCollection.find().toArray();
+        res.send(result)
+    })
+
+    // [[[[[[[[[[[[[[[[[[[[[ Get User Data ]]]]]]]]]]]]]]]]]]]]]
+    app.get("/userData/:email", async (req,res) => {
+        const email = req.params.email;
+        const query = { email: email };
+        const result = await usersCollection.findOne(query);
+        res.send(result)
     })
 
     // [[[[[[[[[[[[[[[[[[[[ Update User Data ]]]]]]]]]]]]]]]]]]]]
+    app.patch("/userData/:id", async (req, res) => {
+        const id = req.params.id;
+        const data = req.body;
+        const filter = { _id: new ObjectId(id) };
+        const options = { upsert: true };
+        const updatedoc = {
+          $set: data,
+        };
+        const result = await usersCollection.updateOne(filter, updatedoc, options);
+        res.send(result);
+      });
+
 
     // [[[[[[[[[[[[[[[[[[[[ Selected College Data ]]]]]]]]]]]]]]]]]]]]
 
