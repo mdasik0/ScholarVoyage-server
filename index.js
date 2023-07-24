@@ -38,6 +38,7 @@ async function run() {
 
     const allCollegesCollection = client.db("scholarVoyageDB").collection("colleges");
     const usersCollection = client.db("scholarVoyageDB").collection("users");
+    const admissionDataCollection = client.db("scholarVoyageDB").collection("admissionData");
 
     // Database access
 
@@ -97,7 +98,18 @@ async function run() {
 
 
     // [[[[[[[[[[[[[[[[[[[[ Selected College Data ]]]]]]]]]]]]]]]]]]]]
+      app.post("/admissionData", async (req,res) => {
+        const data = req.body;
+        const result = await admissionDataCollection.insertOne(data)
+        res.send(result);
+      })
 
+      app.get("/admissionData/:email", async (req,res) => {
+        const email = req.params.email;
+        const query = { email: email };
+        const result = await admissionDataCollection.findOne(query);
+        res.send(result)
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
