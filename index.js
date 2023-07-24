@@ -17,7 +17,7 @@ app.get("/", (req, res) => {
 // mongodb start from here
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.llfgq6f.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -46,6 +46,16 @@ async function run() {
         const result = await allCollegesCollection.find().toArray();
         res.send(result)
     })
+
+    // [[[[[[[[[[[[[[[[[[[[[ Get single College Data ]]]]]]]]]]]]]]]]]]]]]
+    app.get("/allColleges/:id", async(req,res) => {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await allCollegesCollection.findOne(query);
+        res.send(result)
+    })
+
+
 
     // [[[[[[[[[[[[[[[[[[[[[ Post New User Data ]]]]]]]]]]]]]]]]]]]]]
     app.post("/userData", async (req,res) => {
